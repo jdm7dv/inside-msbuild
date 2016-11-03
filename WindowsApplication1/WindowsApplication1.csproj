@@ -1,0 +1,194 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0F34CE5D-2AB0-49A9-8254-B21D1D2EFFA1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WindowsApplication1</RootNamespace>
+    <AssemblyName>WindowsApplication1</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of 
+     the targets below and uncomment it. 
+     Other similar extension points exist, 
+     see Microsoft.Common.targets.
+<Target Name="BeforeBuild">
+</Target>
+<Target Name="AfterBuild">
+</Target>
+-->
+  <Target Name="AfterBuild">
+    <Message Text="Build has completed!" Importance="high" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>echo 'build finished'</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildDependsOn>
+      $(BuildDependsOn);
+      CustomAfterBuild
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="CustomAfterBuild">
+    <Message Text="Inside CustomAfterBuild target" Importance="high" />
+  </Target>
+  <PropertyGroup>
+    <BuildDependsOn>
+      $(BuildDependsOn);
+      CustomAfterBuild2
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Target Name="CustomAfterBuild2">
+    <Message Text="BuildDependsOn: $(BuildDependsOn)" />
+    <Message Text="Inside the CustomAfterBuild target" />
+    <!-- 
+    Delete the zip file if it exists. Since we are putting this in the
+    same folder as the rest of the output we have to delete this file
+    before we create the item, otherwise the item that contains the files
+    to be zipped will include it.
+    -->
+    <CreateProperty Value="$(OutputPath)outputs.zip">
+      <Output TaskParameter="Value" PropertyName="OutputZipFileName" />
+    </CreateProperty>
+    <Delete Files="$(OutputZipFileName)" />
+    <!-- Create the item for the files to be zipped -->
+    <CreateItem Include="$(OutputPath)**\*">
+      <Output ItemName="OutputFiles" TaskParameter="Include" />
+    </CreateItem>
+    <Message Text="@(OutputFiles)" />
+    <Zip Files="@(OutputFiles->'%(FullPath)')" WorkingDirectory="$(OutputPath)" ZipFileName="$(OutputZipFileName)" />
+    <Message Text="Test: %(OutputFiles.FullPath)" />
+    <Message Text="Test2: @(OutputFiles->'%(FullPath)')" />
+  </Target>
+  <!-- Conditionally inject a step before the build starts -->
+  <PropertyGroup>
+    <BuildDependsOn Condition="$(IncludePreBuildStep)=='true'">
+      CustomBeforeBuild;
+      $(BuildDependsOn)
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="CustomBeforeBuild">
+    <Message Text="This is before the build!" />
+  </Target>
+  <!-- 
+  This is required because of a bug in SDC tasks.
+  See http://www.codeplex.com/sdctasks/WorkItem/View.aspx?WorkItemId=10276
+  -->
+  <ItemDefinitionGroup>
+    <EmbeddedResource>
+      <WithCulture>False</WithCulture>
+    </EmbeddedResource>
+  </ItemDefinitionGroup>
+  <PropertyGroup>
+    <ContribRoot>..\BUILD\GenericBuild\Contrib\</ContribRoot>
+  </PropertyGroup>
+  <Import Project="$(ContribRoot)\SDC Tasks - Release 2.1.3155.0\Microsoft.Sdc.Common.tasks" />
+  <!-- Update config with configuration after build -->
+  <PropertyGroup>
+    <BuildDependsOn>
+    $(BuildDependsOn);
+    UpdateConfig
+  </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="UpdateConfig" DependsOnTargets="CoreBuild">
+    <!-- Create an item that points to the dest config file -->
+    <ItemGroup>
+      <_DestConfigFile Include="@(AppConfigWithTargetPath->'$(OutDir)%(TargetPath)')" />
+    </ItemGroup>
+    <PropertyGroup>
+      <_UpdateXPath>/configuration/appSettings/add[@key='configuration']</_UpdateXPath>
+      <_HelpEmailXPath>/configuration/appSettings/add[@key='helpEmail']</_HelpEmailXPath>
+      <_HelpEmail>sayed.hashimi@gmail.com</_HelpEmail>
+    </PropertyGroup>
+    <Message Text="Updating config file %(_DestConfigFile.FullPath)" Importance="low" />
+    <!-- Update existing element -->
+    <Xml.ModifyFile Path="%(_DestConfigFile.FullPath)" AttributeName="value" Force="true" NewValue="$(Configuration)" XPath="$(_UpdateXPath)" />
+    <!-- 
+  Insert a blank element, then use ModifyFile 
+  to update attribute value 
+  -->
+    <XmlFile.AddElement Path="%(_DestConfigFile.FullPath)" XPath="/configuration/appSettings" Name="add" KeyAttributeName="key" KeyAttributeValue="helpEmail" IgnoreNoMatchFailure="false" Force="true" />
+    <Xml.ModifyFile Path="%(_DestConfigFile.FullPath)" AttributeName="value" Force="true" NewValue="$(_HelpEmail)" XPath="$(_HelpEmailXPath)" />
+  </Target>
+  <PropertyGroup>
+    <ContribRoot>..\Contrib\</ContribRoot>
+  </PropertyGroup>
+  <!-- Assembly Info Related -->
+  <Import Project="$(ContribRoot)Microsoft\AssemblyInfoTask\Microsoft.VersionNumber.targets" />
+  <PropertyGroup>
+    <AssemblyBuildNumberFormat>01MMdd</AssemblyBuildNumberFormat>
+    <AssemblyFileBuildNumberFormat>$(AssemblyBuildNumberFormat)</AssemblyFileBuildNumberFormat>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblySearchPaths>
+    ..\..\References\;
+    $(AssemblySearchPaths)
+  </AssemblySearchPaths>
+  </PropertyGroup>
+</Project>
