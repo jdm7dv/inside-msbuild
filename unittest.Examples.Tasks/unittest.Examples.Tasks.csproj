@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,8 +10,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>unittest.Examples.Tasks</RootNamespace>
     <AssemblyName>unittest.Examples.Tasks</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,12 +56,8 @@
     <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Examples.Loggers\Examples.Loggers.csproj">
-      <Project>{620B29D7-075B-4C8E-B3B0-13FAEAF19E00}</Project>
-      <Name>Examples.Loggers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Examples.Tasks\Examples.Tasks.csproj">
-      <Project>{682ED072-873E-4997-A383-5C32F7CCAD56}</Project>
+      <Project>{682ed072-873e-4997-a383-5c32f7ccad56}</Project>
       <Name>Examples.Tasks</Name>
     </ProjectReference>
   </ItemGroup>
